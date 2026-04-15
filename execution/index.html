@@ -37,9 +37,8 @@
         <div class="fg"><label>EWU Email</label><input id="l-email" type="email" placeholder="you@ewubd.edu"/></div>
         <div class="fg"><label>Password</label><input id="l-pass" type="password" placeholder="Enter password"/></div>
         <button class="btn btn-primary btn-lg" style="width:100%" onclick="AuthController.login()">Sign In →</button>
-        <div class="auth-div"><span>or try demo</span></div>
-        <button class="btn btn-ghost" style="width:100%"            onclick="AuthController.demo('user')">🎓 Continue as Student</button>
-        <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="AuthController.demo('admin')">🛡️ Continue as Admin</button>
+        <div class="auth-div"><span>or browse as guest</span></div>
+        <button class="btn btn-ghost" style="width:100%" onclick="AuthController.visitor()">👀 Continue as Visitor</button>
       </div>
       <!-- register -->
       <div id="register-form" class="hidden">
@@ -75,7 +74,7 @@
       <input id="g-srch" placeholder="Search products, courses…" oninput="MarketController.globalSearch()"/>
     </div>
     <div class="nav-right">
-      <button class="nav-ib" onclick="Router.go('messages')" title="Messages" style="position:relative;">
+      <button class="nav-ib hide-admin" onclick="Router.go('messages')" title="Messages" style="position:relative;">
         💬<span class="msg-cnt hidden" id="nav-msg-cnt"></span>
       </button>
       <div class="dd-wrap">
@@ -106,10 +105,10 @@
       <div class="sb-sec">Main</div>
       <button class="sb-item" id="sb-dashboard"   onclick="Router.go('dashboard')"><span class="ic">🏠</span> Dashboard</button>
       <button class="sb-item" id="sb-marketplace" onclick="Router.go('marketplace')"><span class="ic">🛒</span> Marketplace</button>
-      <button class="sb-item" id="sb-messages"    onclick="Router.go('messages')"><span class="ic">💬</span> Messages <span class="sb-bdg hidden" id="sb-msg-bdg"></span></button>
+      <button class="sb-item hide-admin" id="sb-messages"    onclick="Router.go('messages')"><span class="ic">💬</span> Messages <span class="sb-bdg hidden" id="sb-msg-bdg"></span></button>
       <div class="sb-sec">My Account</div>
-      <button class="sb-item" id="sb-my-posts"    onclick="Router.go('my-posts')"><span class="ic">📋</span> My Posts</button>
-      <button class="sb-item" id="sb-transactions"onclick="Router.go('transactions')"><span class="ic">💰</span> Transactions</button>
+      <button class="sb-item hide-admin" id="sb-my-posts"    onclick="Router.go('my-posts')"><span class="ic">📋</span> My Posts</button>
+      <button class="sb-item hide-admin" id="sb-transactions"onclick="Router.go('transactions')"><span class="ic">💰</span> Transactions</button>
       <button class="sb-item" id="sb-profile"     onclick="Router.go('profile')"><span class="ic">👤</span> Profile</button>
       <div id="sb-admin-sec" class="hidden">
         <div class="sb-sec">Admin</div>
@@ -128,26 +127,37 @@
           <div>
             <div class="dh-name" id="dh-name"></div>
             <div class="dh-meta"><span id="dh-dept"></span><span id="dh-sem"></span></div>
-            <div class="dh-rating"><span class="stars">★★★★★</span><span style="font-size:13px;opacity:.85;margin-left:5px;">4.8 · 12 reviews</span></div>
+            <div class="dh-rating hide-admin"><span class="stars">★★★★★</span><span style="font-size:13px;opacity:.85;margin-left:5px;">4.8 · 12 reviews</span></div>
           </div>
           <div class="dh-acts">
-            <button class="btn btn-accent" onclick="Router.go('create-post')">+ New Post</button>
+            <button class="btn btn-accent hide-admin" onclick="Router.go('create-post')">+ New Post</button>
             <button class="btn btn-outline" style="border-color:rgba(255,255,255,.5);color:#fff" onclick="Router.go('profile')">Edit Profile</button>
           </div>
         </div>
-        <div class="stat-grid">
-          <div class="sc"><div class="sc-icon">📦</div><div class="sc-lbl">Listed</div><div class="sc-val" id="s-listed">0</div><div class="sc-sub">Active listings</div></div>
-          <div class="sc"><div class="sc-icon">✅</div><div class="sc-lbl">Sold</div><div class="sc-val" id="s-sold">0</div><div class="sc-sub">Completed</div></div>
-          <div class="sc"><div class="sc-icon">🛍️</div><div class="sc-lbl">Bought</div><div class="sc-val" id="s-bought">0</div><div class="sc-sub">Items purchased</div></div>
-        </div>
-        <div class="dash-two">
-          <div class="card">
-            <div class="sec-title">Recent Listings <button class="btn btn-ghost btn-sm" onclick="Router.go('my-posts')">See all</button></div>
-            <div id="dash-listings"></div>
+        <div class="hide-admin">
+          <div class="stat-grid">
+            <div class="sc"><div class="sc-icon">📦</div><div class="sc-lbl">Listed</div><div class="sc-val" id="s-listed">0</div><div class="sc-sub">Active listings</div></div>
+            <div class="sc"><div class="sc-icon">✅</div><div class="sc-lbl">Sold</div><div class="sc-val" id="s-sold">0</div><div class="sc-sub">Completed</div></div>
+            <div class="sc"><div class="sc-icon">🛍️</div><div class="sc-lbl">Bought</div><div class="sc-val" id="s-bought">0</div><div class="sc-sub">Items purchased</div></div>
           </div>
-          <div class="card">
-            <div class="sec-title">Recent Reviews</div>
-            <div id="dash-reviews"></div>
+          <div class="dash-two">
+            <div class="card">
+              <div class="sec-title">Recent Listings <button class="btn btn-ghost btn-sm" onclick="Router.go('my-posts')">See all</button></div>
+              <div id="dash-listings"></div>
+            </div>
+            <div class="card">
+              <div class="sec-title">Recent Reviews</div>
+              <div id="dash-reviews"></div>
+            </div>
+          </div>
+        </div>
+        <div class="admin-only">
+          <h3 style="margin-bottom:12px">Platform Statistics</h3>
+          <div class="admin-sg">
+            <div class="sc"><div class="sc-lbl">Total Users</div><div class="sc-val" id="dash-adm-u">0</div></div>
+            <div class="sc"><div class="sc-lbl">Active Listings</div><div class="sc-val" id="dash-adm-l">0</div></div>
+            <div class="sc"><div class="sc-lbl">Transactions</div><div class="sc-val" id="dash-adm-t">0</div></div>
+            <div class="sc"><div class="sc-lbl">Pending Reports</div><div class="sc-val" style="color:var(--danger)" id="dash-adm-r">0</div></div>
           </div>
         </div>
       </div>
@@ -267,7 +277,7 @@
               <div class="pfl-av" id="pfl-av"></div>
               <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700" id="pfl-name"></div>
               <div style="font-size:13px;color:var(--text2);margin-top:3px" id="pfl-id"></div>
-              <div style="margin-top:10px"><span class="stars">★★★★★</span> <span style="font-size:13px">4.8 (12)</span></div>
+              <div style="margin-top:10px" class="hide-admin"><span class="stars">★★★★★</span> <span style="font-size:13px">4.8 (12)</span></div>
               <div style="margin-top:14px;text-align:left;display:flex;flex-direction:column;gap:5px">
                 <div style="font-size:13px"><strong>Dept:</strong> <span id="pfl-dept"></span></div>
                 <div style="font-size:13px"><strong>Semester:</strong> <span id="pfl-sem"></span></div>
@@ -275,7 +285,7 @@
               </div>
               <button class="btn btn-danger" style="width:100%; margin-top:20px;" onclick="AuthController.confirmLogout()">Logout</button>
             </div>
-            <div class="card"><div class="sec-title" style="margin-bottom:12px">Reviews Received</div><div id="pfl-reviews"></div></div>
+            <div class="card hide-admin"><div class="sec-title" style="margin-bottom:12px">Reviews Received</div><div id="pfl-reviews"></div></div>
           </div>
           <div class="card">
             <h3 style="font-size:16px;font-weight:700;margin-bottom:20px">Edit Details</h3>
@@ -329,11 +339,11 @@
   <div class="bottom-bar">
     <button class="bar-btn active" id="bar-dashboard"   onclick="Router.go('dashboard')"><span class="bi">🏠</span><span class="bl">Home</span></button>
     <button class="bar-btn"        id="bar-marketplace" onclick="Router.go('marketplace')"><span class="bi">🛒</span><span class="bl">Shop</span></button>
-    <button class="bar-post" onclick="Router.go('create-post')">
+    <button class="bar-post hide-admin" onclick="Router.go('create-post')">
       <div class="bar-post-circle">＋</div>
       <div class="bar-post-lbl">Post</div>
     </button>
-    <button class="bar-btn" id="bar-messages" onclick="Router.go('messages')"><span class="bi">💬</span><span class="bl">Messages</span><span class="bb hidden" id="bar-msg-bb"></span></button>
+    <button class="bar-btn hide-admin" id="bar-messages" onclick="Router.go('messages')"><span class="bi">💬</span><span class="bl">Messages</span><span class="bb hidden" id="bar-msg-bb"></span></button>
     <button class="bar-btn" id="bar-profile"  onclick="Router.go('profile')"><span class="bi">👤</span><span class="bl">Profile</span></button>
   </div>
 
@@ -392,6 +402,18 @@
     <div class="modal-ftr">
       <button class="btn btn-ghost" onclick="AdminController.closeCreateUser()">Cancel</button>
       <button class="btn btn-primary" onclick="AdminController.createUser()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- Visitor Modal -->
+<div class="overlay" id="vis-modal">
+  <div class="modal" style="max-width:400px;text-align:center">
+    <div class="modal-hdr"><h3 style="flex:1">Registration Required</h3><button class="modal-close" onclick="document.getElementById('vis-modal').classList.remove('open')">✕</button></div>
+    <div class="modal-body">
+      <div style="font-size:48px;margin-bottom:10px">🔒</div>
+      <p style="margin-bottom:20px;color:var(--text2)">You need an account to buy, sell, or message other students.</p>
+      <button class="btn btn-primary btn-lg" style="width:100%" onclick="AuthController.exitVisitorToRegister()">Create Account</button>
     </div>
   </div>
 </div>

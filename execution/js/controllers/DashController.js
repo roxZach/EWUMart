@@ -18,17 +18,25 @@ class DashController {
     document.getElementById('dh-dept').textContent = u.dept;
     document.getElementById('dh-sem').textContent  = u.sem;
 
-    // Stat counters
-    const mine = db.data.products.filter(p => p.sid === u.id);
-    document.getElementById('s-listed').textContent = mine.length;
-    document.getElementById('s-sold').textContent   = mine.filter(p => p.status === 'Sold').length;
-    document.getElementById('s-bought').textContent = db.data.txns.filter(t => t.bid === u.id).length;
+    if (u.role === 'admin') {
+      // Platform Statistics
+      document.getElementById('dash-adm-u').textContent = db.data.users.length;
+      document.getElementById('dash-adm-l').textContent = db.data.products.filter(p => p.status === 'Active').length;
+      document.getElementById('dash-adm-t').textContent = db.data.txns.length;
+      document.getElementById('dash-adm-r').textContent = db.data.reports.filter(r => r.status === 'Pending').length;
+    } else {
+      // Stat counters
+      const mine = db.data.products.filter(p => p.sid === u.id);
+      document.getElementById('s-listed').textContent = mine.length;
+      document.getElementById('s-sold').textContent   = mine.filter(p => p.status === 'Sold').length;
+      document.getElementById('s-bought').textContent = db.data.txns.filter(t => t.bid === u.id).length;
 
-    // Recent listings
-    DashController._renderListings(mine);
+      // Recent listings
+      DashController._renderListings(mine);
 
-    // Recent reviews
-    DashController._renderReviews(u.id);
+      // Recent reviews
+      DashController._renderReviews(u.id);
+    }
   }
 
   /** Render recent 4 listings in the dashboard card */

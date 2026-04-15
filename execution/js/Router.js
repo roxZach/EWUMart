@@ -19,6 +19,9 @@ class Router {
    * @param {string} page - e.g. 'dashboard', 'marketplace', 'messages'
    */
   static go(page) {
+    if (['create-post', 'messages', 'my-posts', 'transactions', 'profile'].includes(page)) {
+      if (AuthController.checkVisitor()) return;
+    }
     // Activate page
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const pg = document.getElementById('page-' + page);

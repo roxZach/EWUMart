@@ -21,6 +21,11 @@ class Database {
    * @param {number} uid — current user ID
    */
   async init(uid) {
+    if (uid === 0) {
+      this.data.products = await ApiService.getProducts();
+      this.data.users = []; this.data.msgs = []; this.data.txns = []; this.data.reviews = []; this.data.reports = [];
+      return;
+    }
     const d = await ApiService.init(uid);
     this.data.users    = d.users    || [];
     this.data.products = d.products || [];

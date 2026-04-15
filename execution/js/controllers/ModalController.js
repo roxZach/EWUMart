@@ -48,17 +48,18 @@ class ModalController {
       ? `<button class="btn btn-ghost" onclick="ModalController.closeProduct()">Close</button>
          <button class="btn btn-outline" onclick="ModalController.closeProduct();PostController.edit(${p.id})">✏️ Edit</button>
          <button class="btn btn-danger" onclick="PostListController.del(${p.id});ModalController.closeProduct()">🗑️ Delete</button>`
-      : `<button class="btn btn-ghost btn-sm" onclick="ModalController.closeProduct();ReportController.open(${p.id})">🚩 Report</button>
+      : `<button class="btn btn-ghost btn-sm" onclick="if(AuthController.checkVisitor()){ModalController.closeProduct();return;}ModalController.closeProduct();ReportController.open(${p.id})">🚩 Report</button>
          <button class="btn btn-ghost" onclick="ModalController.closeProduct()">Close</button>
          ${p.type === 'Sell' && p.status === 'Active'
            ? `<button class="btn btn-primary" onclick="ModalController.buy(${p.id})">Buy Now</button>` : ''}
-         <button class="btn btn-outline" onclick="ModalController.closeProduct();MsgController.startWith(${p.sid})">💬 Message</button>`;
+         <button class="btn btn-outline" onclick="if(AuthController.checkVisitor()){ModalController.closeProduct();return;}ModalController.closeProduct();MsgController.startWith(${p.sid})">💬 Message</button>`;
 
     document.getElementById('prod-modal').classList.add('open');
   }
 
   /** Buy a product — async transaction creation */
   static async buy(pid) {
+    if (AuthController.checkVisitor()) { ModalController.closeProduct(); return; }
     const p = db.prod(pid);
     if (!p || p.status !== 'Active') return;
     try {

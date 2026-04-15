@@ -65,20 +65,32 @@ class AuthController {
     }
   }
 
-  /** Quick demo login (bypasses API, uses known credentials) */
-  static async demo(role) {
-    const creds = role === 'admin'
-      ? { email: 'admin@ewubd.edu', pw: 'admin' }
-      : { email: 'ibna@ewubd.edu',  pw: '1234'  };
+  /** Quick visitor login */
+  static async visitor() {
     try {
-      Loader.show('Loading demo…');
-      const u = await ApiService.login(creds.email, creds.pw);
+      Loader.show('Entering as visitor…');
+      const u = { id: 0, fname: 'Guest', lname: 'Visitor', role: 'visitor', dept: '', sem: '' };
       await AuthController._enter(u);
+      Router.go('marketplace'); // Default to marketplace for visitors
     } catch (e) {
-      AuthController._err('Demo login failed — is the server running?');
+      AuthController._err('Visitor entry failed.');
     } finally {
       Loader.hide();
     }
+  }
+
+  static exitVisitorToRegister() {
+    document.getElementById('vis-modal').classList.remove('open');
+    this.logout();
+    this.switchTab('register', document.querySelectorAll('.auth-tab')[1]);
+  }
+
+  static checkVisitor() {
+    if (this._u && this._u.role === 'visitor') {
+      document.getElementById('vis-modal').classList.add('open');
+      return true;
+    }
+    return false;
   }
 
   static confirmLogout() {
@@ -107,6 +119,7 @@ class AuthController {
     document.getElementById('app').classList.add('visible');
     document.getElementById('nav-av').textContent = u.fname[0] + (u.lname ? u.lname[0] : '');
     document.getElementById('sb-admin-sec').classList.toggle('hidden', u.role !== 'admin');
+    document.body.classList.toggle('is-admin', u.role === 'admin');
 
     Badge.update();
     Router.go('dashboard');
