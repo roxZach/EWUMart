@@ -1,16 +1,18 @@
-'use strict';
+"use strict";
 
 /**
  * PostListController — My Posts table (async status change and delete).
  */
 class PostListController {
   static render() {
-    const u    = AuthController.user;
-    const mine = db.data.products.filter(p => p.sid === u.id);
-    const tbody = document.getElementById('my-posts-body');
+    const u = AuthController.user;
+    const mine = db.data.products.filter((p) => p.sid === u.id);
+    const tbody = document.getElementById("my-posts-body");
 
     tbody.innerHTML = mine.length
-      ? mine.map(p => `
+      ? mine
+          .map(
+            (p) => `
           <tr>
             <td>
               <div style="display:flex;align-items:center;gap:10px">
@@ -21,23 +23,29 @@ class PostListController {
                 </div>
               </div>
             </td>
-            <td><span class="badge ${p.type === 'Sell' ? 'badge-blue' : 'badge-amber'}">${p.type}</span></td>
+            <td><span class="badge ${p.type === "Sell" ? "badge-blue" : "badge-amber"}">${p.type}</span></td>
             <td style="font-weight:600">৳${p.price.toLocaleString()}</td>
             <td>
               <select onchange="PostListController.changeStatus(${p.id},this.value)"
                       style="width:auto;padding:4px 8px;font-size:13px">
-                ${['Active','Sold','Closed'].map(s =>
-                  `<option ${p.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+                ${["Active", "Sold", "Closed"]
+                  .map(
+                    (s) =>
+                      `<option ${p.status === s ? "selected" : ""}>${s}</option>`,
+                  )
+                  .join("")}
               </select>
             </td>
             <td style="color:var(--text3);font-size:13px">${p.date}</td>
             <td>
-              <div style="display:flex;gap:6px">
-                <button class="btn btn-ghost btn-sm" onclick="PostController.edit(${p.id})">✏️ Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="PostListController.del(${p.id})">🗑️</button>
+              <div style="display:flex;gap:20px">
+                <button class="btn btn-ghost btn-sm" onclick="PostController.edit(${p.id})"><i class="ph-bold ph-pencil-simple"></i> Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="PostListController.del(${p.id})"><i class="ph-bold ph-trash"></i> Delete</button>
               </div>
             </td>
-          </tr>`).join('')
+          </tr>`,
+          )
+          .join("")
       : `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">
            No posts yet. <button class="btn btn-primary btn-sm" onclick="Router.go('create-post')">Create one!</button>
          </td></tr>`;
@@ -52,21 +60,21 @@ class PostListController {
       Toast.show(`Status → ${status}`);
       PostListController.render();
     } catch (e) {
-      Toast.show('Failed to update status.');
+      Toast.show("Failed to update status.");
     }
   }
 
   /** Delete product — async API delete */
   static async del(id) {
-    if (!confirm('Delete this post?')) return;
+    if (!confirm("Delete this post?")) return;
     try {
-      Loader.show('Deleting…');
+      Loader.show("Deleting…");
       await db.removeProd(id);
       PostListController.render();
       DashController.render();
-      Toast.show('Post deleted.');
+      Toast.show("Post deleted.");
     } catch (e) {
-      Toast.show('Failed to delete post.');
+      Toast.show("Failed to delete post.");
     } finally {
       Loader.hide();
     }
