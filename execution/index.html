@@ -89,7 +89,13 @@
           <div class="dd-item"><div class="ni-t">New review received ⭐⭐⭐⭐⭐</div><div class="ni-s">Rafi gave you 5 stars</div></div>
         </div>
       </div>
-      <div class="nav-avatar" id="nav-av" onclick="Router.go('profile')"></div>
+      <div class="dd-wrap hover-dd">
+        <div class="nav-avatar" id="nav-av" onclick="Router.go('profile')"></div>
+        <div class="dd" id="profile-dd" style="min-width:140px; right:0; top:calc(100% + 5px);">
+          <div class="dd-item" onclick="Router.go('profile')">My Profile</div>
+          <div class="dd-item" onclick="AuthController.confirmLogout()" style="color:var(--danger)">Logout</div>
+        </div>
+      </div>
     </div>
   </nav>
 
@@ -109,7 +115,7 @@
         <div class="sb-sec">Admin</div>
         <button class="sb-item" id="sb-admin"     onclick="Router.go('admin')"><span class="ic">🛡️</span> Admin Panel</button>
       </div>
-      <button class="sb-item sb-logout" onclick="AuthController.logout()" style="margin-top:auto"><span class="ic">🚪</span> Logout</button>
+      <button class="sb-item sb-logout" onclick="AuthController.confirmLogout()" style="margin-top:auto"><span class="ic">🚪</span> Logout</button>
     </aside>
 
     <!-- Main content -->
@@ -267,6 +273,7 @@
                 <div style="font-size:13px"><strong>Semester:</strong> <span id="pfl-sem"></span></div>
                 <div style="font-size:13px"><strong>Email:</strong> <span id="pfl-email"></span></div>
               </div>
+              <button class="btn btn-danger" style="width:100%; margin-top:20px;" onclick="AuthController.confirmLogout()">Logout</button>
             </div>
             <div class="card"><div class="sec-title" style="margin-bottom:12px">Reviews Received</div><div id="pfl-reviews"></div></div>
           </div>

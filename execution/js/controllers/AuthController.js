@@ -81,6 +81,12 @@ class AuthController {
     }
   }
 
+  static confirmLogout() {
+    if (confirm("Are you sure you want to log out?")) {
+      AuthController.logout();
+    }
+  }
+
   /** Logout — clear session and return to auth screen */
   static logout() {
     AuthController._u = null;

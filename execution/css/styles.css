@@ -263,6 +263,7 @@ label{font-size:13px;font-weight:500;color:var(--text2);display:block;margin-bot
 .dd-wrap{position:relative;}
 .dd{position:absolute;top:calc(100% + 10px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-lg);min-width:300px;z-index:300;display:none;}
 .dd.open{display:block;}
+.hover-dd:hover .dd{display:block;}
 .dd-hdr{padding:12px 16px;border-bottom:1px solid var(--border);font-weight:600;font-size:14px;}
 .dd-item{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .14s;font-size:14px;}
 .dd-item:hover{background:var(--bg);}
