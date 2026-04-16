@@ -82,7 +82,9 @@ class MsgController {
 
         return `
         <div class="cl-item ${active ? "active" : ""}" onclick="MsgController._openThread(${pid})">
-          ${Avatar.html(pid, init, "cl-av")}
+          <div class="cl-av-wrap" onclick="event.stopPropagation();PublicProfileController.open(${pid})" title="View profile">
+            ${Avatar.html(pid, init, "cl-av")}
+          </div>
           <div class="cl-info">
             <div class="cl-name">${partner.fname} ${partner.lname}</div>
             <div class="cl-prev">${last ? (last.from === u.id ? "You: " : "") + last.text : "No messages yet"}</div>
@@ -107,6 +109,11 @@ class MsgController {
     document.getElementById("chat-hdr").classList.remove("hidden");
     const hdrAv = document.getElementById("chat-hdr-av");
     Avatar.apply(hdrAv, pid, partner.fname[0] + (partner.lname ? partner.lname[0] : ""));
+    // Make entire header row clickable → open public profile
+    const hdrEl = document.getElementById("chat-hdr");
+    hdrEl.onclick = () => PublicProfileController.open(pid);
+    hdrEl.style.cursor = "pointer";
+    hdrEl.title = "View profile";
     document.getElementById("chat-hdr-name").textContent =
       partner.fname + " " + partner.lname;
     document.getElementById("chat-hdr-sub").textContent =

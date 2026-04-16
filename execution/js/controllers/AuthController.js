@@ -142,9 +142,12 @@ class AuthController {
     if (dd) dd.classList.remove("open");
   }
 
-  /** Navigate to Profile page and close the dropdown. */
-  static goProfile() {
+  /** Navigate to Profile page and optionally open edit mode. */
+  static goProfile(startEditing = false) {
     AuthController._closeProfileMenu();
+    if (startEditing) {
+      ProfileController.requestOpenInEditMode();
+    }
     Router.go("profile");
   }
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/env python3
 """
 EWUMart Backend Server
@@ -9,10 +10,14 @@ URL:  http://localhost:5500
 DB:   execution/ewumart.db  (auto-created on first run)
 """
 
-import os, json, hashlib, sqlite3
+import os, json, hashlib, sqlite3, sys
 from datetime import date, datetime
 from flask import Flask, jsonify, request, send_from_directory, g
 from flask_cors import CORS
+
+# Force UTF-8 output so emoji in seed data / logs never crash on Windows
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 # ── Config ───────────────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -158,7 +163,7 @@ def seed(db):
     users = [
         (1,'Ibna','Jiam',   'ibna@ewubd.edu',  hp('1234'),  'CSE',   'Spring 2025','2021-1-60-001','user', 'CSE student.'),
         (2,'Nadia','Islam', 'nadia@ewubd.edu', hp('1234'),  'EEE',   'Summer 2025','2022-3-45-010','user', 'Loves electronics.'),
-        (3,'Admin','EWU',   'admin@ewubd.edu', hp('admin'), 'Admin', '—',           'ADMIN-001',    'admin','Admin.'),
+        (3,'Admin','EWU',   'admin@ewubd.edu', hp('admin'), 'Admin', '-',           'ADMIN-001',    'admin','Admin.'),
         (4,'Rafi','Hossain','rafi@ewubd.edu',  hp('1234'),  'BBA',   'Fall 2025',  '2020-2-10-055','user', 'Business student.'),
     ]
     db.executemany("INSERT OR IGNORE INTO users VALUES (?,?,?,?,?,?,?,?,?,?)", users)
@@ -196,8 +201,11 @@ def init_db():
     db.executescript(SCHEMA)
     if not db.execute("SELECT 1 FROM users LIMIT 1").fetchone():
         seed(db)
+    # Remove seeded dummy products on every start so only real user posts remain
+    db.execute("DELETE FROM products WHERE id IN (1,2,3,4,5,6)")
+    db.commit()
     db.close()
-    print(f"✅ Database ready: {DB_PATH}")
+    print(f"[OK] Database ready: {DB_PATH}")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # API ROUTES
@@ -209,10 +217,10 @@ def api_init(uid):
     """Return all data needed to boot the app for a given user."""
     return jsonify({
         'users':    q("SELECT * FROM users"),
-        'products': [prod_row(r) for r in q("SELECT * FROM products")],
+        'products': [prod_row(r) for r in q("SELECT * FROM products ORDER BY id DESC")],
         'msgs':     [msg_row(r)  for r in q("SELECT * FROM messages WHERE src=? OR dst=?", (uid, uid))],
         'txns':     [txn_row(r)  for r in q("SELECT * FROM transactions WHERE bid=? OR seller=?", (uid, uid))],
-        'reviews':  [rev_row(r)  for r in q("SELECT * FROM reviews WHERE for_u=?", (uid,))],
+        'reviews':  [rev_row(r)  for r in q("SELECT * FROM reviews")],
         'reports':  [rep_row(r)  for r in q("SELECT * FROM reports")],
     })
 
@@ -254,6 +262,14 @@ def api_register():
 def api_users():
     return jsonify(q("SELECT * FROM users"))
 
+@app.route('/api/users/<int:uid>')
+def api_get_user(uid):
+    """Return a single user's public data."""
+    u = q1("SELECT * FROM users WHERE id=?", (uid,))
+    if not u:
+        return jsonify({'error': 'User not found.'}), 404
+    return jsonify(u)
+
 @app.route('/api/users/<int:uid>', methods=['PUT'])
 def api_update_user(uid):
     d    = request.get_json()
@@ -262,8 +278,28 @@ def api_update_user(uid):
     dept = d.get('dept', '')
     sem  = d.get('sem', '')
     bio  = d.get('bio', '')
+    current_pw = d.get('currentPw') or ''
+    new_pw = d.get('newPw') or ''
+
+    wants_password_change = bool(current_pw or new_pw)
+    if wants_password_change:
+        if not current_pw or not new_pw:
+            return jsonify({'error': 'Current and new password are required.'}), 400
+        if len(new_pw) < 6:
+            return jsonify({'error': 'New password must be at least 6 characters.'}), 400
+
+        u = q1("SELECT * FROM users WHERE id=?", (uid,))
+        if not u:
+            return jsonify({'error': 'User not found.'}), 404
+        if u.get('pw') != hp(current_pw):
+            return jsonify({'error': 'Current password is incorrect.'}), 400
+
     mut("UPDATE users SET fname=?,lname=?,dept=?,sem=?,bio=? WHERE id=?",
         (fn, ln, dept, sem, bio, uid))
+
+    if wants_password_change:
+        mut("UPDATE users SET pw=? WHERE id=?", (hp(new_pw), uid))
+
     return jsonify(q1("SELECT * FROM users WHERE id=?", (uid,)))
 
 @app.route('/api/users/<int:uid>/role', methods=['PUT'])
@@ -275,6 +311,26 @@ def api_set_role(uid):
         return jsonify({'error': 'Invalid role'}), 400
     mut("UPDATE users SET role=? WHERE id=?", (role, uid))
     return jsonify(q1("SELECT * FROM users WHERE id=?", (uid,)))
+
+@app.route('/api/users/<int:uid>/password', methods=['PUT'])
+def api_change_password(uid):
+    d = request.get_json() or {}
+    current_pw = d.get('currentPw') or ''
+    new_pw = d.get('newPw') or ''
+
+    if not current_pw or not new_pw:
+        return jsonify({'error': 'Current and new password are required.'}), 400
+    if len(new_pw) < 6:
+        return jsonify({'error': 'New password must be at least 6 characters.'}), 400
+
+    u = q1("SELECT * FROM users WHERE id=?", (uid,))
+    if not u:
+        return jsonify({'error': 'User not found.'}), 404
+    if u.get('pw') != hp(current_pw):
+        return jsonify({'error': 'Current password is incorrect.'}), 400
+
+    mut("UPDATE users SET pw=? WHERE id=?", (hp(new_pw), uid))
+    return jsonify({'ok': True})
 
 # ── Products ──────────────────────────────────────────────────────────────────
 @app.route('/api/products')
@@ -334,7 +390,67 @@ def api_create_transaction():
 # ── Reviews ───────────────────────────────────────────────────────────────────
 @app.route('/api/reviews/<int:uid>')
 def api_reviews(uid):
+    """All reviews received by a user."""
     return jsonify([rev_row(r) for r in q("SELECT * FROM reviews WHERE for_u=?", (uid,))])
+
+@app.route('/api/reviews/by/<int:uid>')
+def api_reviews_by(uid):
+    """All reviews written by a user."""
+    return jsonify([rev_row(r) for r in q("SELECT * FROM reviews WHERE by_u=?", (uid,))])
+
+@app.route('/api/reviews', methods=['POST'])
+def api_create_review():
+    """Create a review or rating.
+    stars > 0  → rating row, one per (by_u, for_u) pair — upserted.
+    stars == 0 → text review — multiple allowed per pair.
+    """
+    d     = request.get_json() or {}
+    by_u  = d.get('by')
+    for_u = d.get('for')
+    stars = int(d.get('stars', 0))
+    text  = (d.get('text') or '').strip()
+
+    if by_u is None or for_u is None:
+        return jsonify({'error': 'Missing by/for fields.'}), 400
+
+    if stars > 0:
+        # Upsert rating (only one rating per pair allowed)
+        existing = q1("SELECT * FROM reviews WHERE by_u=? AND for_u=? AND stars>0", (by_u, for_u))
+        if existing:
+            mut("UPDATE reviews SET stars=?, date=? WHERE id=?", (stars, today_str(), existing['id']))
+            return jsonify(rev_row(q1("SELECT * FROM reviews WHERE id=?", (existing['id'],))))
+        else:
+            rid = mut("INSERT INTO reviews (by_u, for_u, stars, text, date) VALUES (?,?,?,?,?)",
+                      (by_u, for_u, stars, '', today_str()))
+            return jsonify(rev_row(q1("SELECT * FROM reviews WHERE id=?", (rid,)))), 201
+    else:
+        # Text review — always a new row
+        if not text:
+            return jsonify({'error': 'Review text cannot be empty.'}), 400
+        rid = mut("INSERT INTO reviews (by_u, for_u, stars, text, date) VALUES (?,?,?,?,?)",
+                  (by_u, for_u, 0, text, today_str()))
+        return jsonify(rev_row(q1("SELECT * FROM reviews WHERE id=?", (rid,)))), 201
+
+@app.route('/api/reviews/<int:rid>', methods=['PUT'])
+def api_update_review(rid):
+    """Edit a review row (stars or text)."""
+    d = request.get_json() or {}
+    r = q1("SELECT * FROM reviews WHERE id=?", (rid,))
+    if not r:
+        return jsonify({'error': 'Review not found.'}), 404
+    stars = d.get('stars')
+    text  = d.get('text')
+    if stars is not None:
+        mut("UPDATE reviews SET stars=?, date=? WHERE id=?", (int(stars), today_str(), rid))
+    if text is not None:
+        mut("UPDATE reviews SET text=?, date=? WHERE id=?", (text.strip(), today_str(), rid))
+    return jsonify(rev_row(q1("SELECT * FROM reviews WHERE id=?", (rid,))))
+
+@app.route('/api/reviews/<int:rid>', methods=['DELETE'])
+def api_delete_review(rid):
+    """Delete a review or rating row."""
+    mut("DELETE FROM reviews WHERE id=?", (rid,))
+    return jsonify({'ok': True})
 
 # ── Reports ───────────────────────────────────────────────────────────────────
 @app.route('/api/reports')
@@ -365,5 +481,6 @@ def static_files(path):
 # ── Entry Point ───────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     init_db()
-    print("\n🛒  EWUMart backend  →  http://localhost:5500\n")
-    app.run(host='0.0.0.0', port=5500, debug=False, use_reloader=False)
+    print("\n[EWUMart] Backend running at http://localhost:5500\n")
+    app.run(host='0.0.0.0', port=5500, debug=False, use_reloader=True)
+

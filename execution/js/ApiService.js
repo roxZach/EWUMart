@@ -20,11 +20,47 @@ class ApiService {
     };
     if (body !== null) opts.body = JSON.stringify(body);
 
-    const res = await fetch(ApiService.BASE + path, opts);
-    const data = await res.json();
+    let res;
+    try {
+      res = await fetch(ApiService.BASE + path, opts);
+    } catch {
+      throw new Error(
+        "Unable to reach the server. Please check your connection and try again.",
+      );
+    }
 
-    if (!res.ok)
-      throw new Error(data.error || `Request failed (${res.status})`);
+    const raw = await res.text();
+
+    let data = null;
+    if (raw) {
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        data = null;
+      }
+    }
+
+    if (!res.ok) {
+      if (data && data.error) {
+        throw new Error(data.error);
+      }
+
+      const t = (raw || "").trim().toLowerCase();
+      if (t.startsWith("<!doctype") || t.startsWith("<html")) {
+        throw new Error("Server error. Please try again in a moment.");
+      }
+
+      throw new Error(`Request failed (${res.status})`);
+    }
+
+    if (data === null) {
+      const t = (raw || "").trim().toLowerCase();
+      if (t.startsWith("<!doctype") || t.startsWith("<html")) {
+        throw new Error("Server error. Please refresh and try again.");
+      }
+      throw new Error("Unexpected server response. Please try again.");
+    }
+
     return data;
   }
 
@@ -96,5 +132,28 @@ class ApiService {
   /** Users */
   static updateUser(id, data) {
     return ApiService.put(`/users/${id}`, data);
+  }
+
+  static updatePassword(id, currentPw, newPw) {
+    return ApiService.put(`/users/${id}/password`, { currentPw, newPw });
+  }
+
+  /** Single user public data */
+  static getUser(uid) {
+    return ApiService.get(`/users/${uid}`);
+  }
+
+  /** Reviews */
+  static getReviewsFor(uid) {
+    return ApiService.get(`/reviews/${uid}`);
+  }
+  static submitReview(data) {
+    return ApiService.post('/reviews', data);
+  }
+  static updateReview(id, data) {
+    return ApiService.put(`/reviews/${id}`, data);
+  }
+  static deleteReview(id) {
+    return ApiService.del(`/reviews/${id}`);
   }
 }

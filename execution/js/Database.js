@@ -79,7 +79,7 @@ class Database {
   /** Create a new product listing */
   async addProduct(data) {
     const saved = await ApiService.createProduct(data);
-    this.data.products.push(saved);
+    this.data.products.unshift(saved); // newest-first
     return saved;
   }
 
@@ -146,6 +146,11 @@ class Database {
     return saved;
   }
 
+  /** Update a user's password after validating current password */
+  async updatePassword(uid, currentPw, newPw) {
+    return ApiService.updatePassword(uid, currentPw, newPw);
+  }
+
   /** Admin: create a new user account */
   async addUser(data) {
     const saved = await ApiService.register(data);
@@ -159,5 +164,86 @@ class Database {
     const idx = this.data.users.findIndex((u) => u.id === uid);
     if (idx >= 0) this.data.users[idx] = saved;
     return saved;
+  }
+
+  // ── Review helpers (read from cache) ────────────────────────────────────────
+
+  /** All reviews received by uid */
+  reviewsFor(uid) {
+    return this.data.reviews.filter((r) => r.for === uid);
+  }
+
+  /** All reviews written by uid */
+  reviewsBy(uid) {
+    return this.data.reviews.filter((r) => r.by === uid);
+  }
+
+  /** Average star rating for uid (from rating rows, stars > 0). Returns null if none. */
+  avgRating(uid) {
+    const rows = this.data.reviews.filter((r) => r.for === uid && r.stars > 0);
+    if (!rows.length) return null;
+    return (rows.reduce((s, r) => s + r.stars, 0) / rows.length).toFixed(1);
+  }
+
+  /** Number of distinct people who rated uid */
+  ratingCount(uid) {
+    return this.data.reviews.filter((r) => r.for === uid && r.stars > 0).length;
+  }
+
+  /** Number of text reviews received by uid */
+  reviewCount(uid) {
+    return this.data.reviews.filter((r) => r.for === uid && r.stars === 0 && r.text).length;
+  }
+
+  // ── Review mutators (API → cache) ────────────────────────────────────────────
+
+  /**
+   * Submit a rating (stars > 0, upserted) or text review (stars === 0).
+   * @param {{ by, for, stars, text }} data
+   */
+  async addReview(data) {
+    const saved = await ApiService.submitReview({
+      by: data.by,
+      for: data.for,
+      stars: data.stars || 0,
+      text: data.text || '',
+    });
+    if (data.stars > 0) {
+      // Upsert: replace existing rating row in cache
+      const idx = this.data.reviews.findIndex(
+        (r) => r.by === data.by && r.for === data.for && r.stars > 0,
+      );
+      if (idx >= 0) this.data.reviews[idx] = saved;
+      else this.data.reviews.push(saved);
+    } else {
+      this.data.reviews.push(saved);
+    }
+    return saved;
+  }
+
+  /** Update a review row's text or stars */
+  async updateReview(id, changes) {
+    const saved = await ApiService.updateReview(id, changes);
+    const idx = this.data.reviews.findIndex((r) => r.id === id);
+    if (idx >= 0) this.data.reviews[idx] = saved;
+    return saved;
+  }
+
+  /** Delete a review row */
+  async deleteReview(id) {
+    await ApiService.deleteReview(id);
+    this.data.reviews = this.data.reviews.filter((r) => r.id !== id);
+  }
+
+  /**
+   * Merge a fresh batch of reviews for a user into the cache
+   * (used when opening a public profile to pull that user's reviews).
+   */
+  mergeReviews(reviews) {
+    reviews.forEach((r) => {
+      const idx = this.data.reviews.findIndex((x) => x.id === r.id);
+      if (idx >= 0) this.data.reviews[idx] = r;
+      else this.data.reviews.push(r);
+    });
   }
 }

@@ -327,28 +327,7 @@
                 <div class="dh-meta">
                   <span id="dh-dept"></span><span id="dh-sem"></span>
                 </div>
-                <div class="dh-rating hide-admin">
-                  <span class="stars">★★★★★</span
-                  ><span
-                    style="font-size: 13px; opacity: 0.85; margin-left: 5px"
-                    >4.8 · 12 reviews</span
-                  >
-                </div>
-              </div>
-              <div class="dh-acts">
-                <button
-                  class="btn btn-accent hide-admin"
-                  onclick="Router.go('create-post')"
-                >
-                  + New Post
-                </button>
-                <button
-                  class="btn btn-outline"
-                  style="border-color: rgba(255, 255, 255, 0.5); color: #fff"
-                  onclick="Router.go('profile')"
-                >
-                  Edit Profile
-                </button>
+                <div class="dh-rating hide-admin" id="dh-rating"></div>
               </div>
             </div>
             <div class="hide-admin">
@@ -491,12 +470,12 @@
 
           <!-- MESSAGES -->
           <div class="page" id="page-messages">
-            <div class="page-hdr">
+            <!-- <div class="page-hdr">
               <div>
                 <h2>Messages</h2>
                 <p>Chat with buyers and sellers</p>
               </div>
-            </div>
+            </div> -->
             <div class="msg-layout">
               <div class="cl-panel">
                 <div class="cl-hdr">
@@ -732,10 +711,10 @@
           <!-- PROFILE -->
           <div class="page" id="page-profile">
             <div class="page-hdr">
-              <div>
+              <!-- <div>
                 <h2>My Profile</h2>
                 <p>Account details and reviews</p>
-              </div>
+              </div> -->
             </div>
             <div class="profile-layout">
               <div>
@@ -783,10 +762,7 @@
                     "
                     id="pfl-id"
                   ></div>
-                  <div style="margin-top: 10px" class="hide-admin">
-                    <span class="stars">★★★★★</span>
-                    <span style="font-size: 13px">4.8 (12)</span>
-                  </div>
+                  <div style="margin-top: 10px" class="hide-admin" id="pfl-rating-display"></div>
                   <div
                     style="
                       margin-top: 14px;
@@ -896,27 +872,48 @@
                   <div class="fg">
                     <label>Current Password</label
                     ><input id="e-cp" type="password" />
+                    <div class="field-err" id="e-cp-err"></div>
                   </div>
                   <div class="form-row">
                     <div class="fg">
                       <label>New Password</label
                       ><input id="e-np" type="password" />
+                      <div class="field-err" id="e-np-err"></div>
                     </div>
                     <div class="fg">
                       <label>Confirm</label><input id="e-cf" type="password" />
+                      <div class="field-err" id="e-cf-err"></div>
                     </div>
                   </div>
                 </div>
                 <div
                   style="display: flex; gap: 10px; justify-content: flex-end"
                 >
-                  <button class="btn btn-ghost">Cancel</button>
                   <button
                     class="btn btn-primary"
-                    onclick="ProfileController.save()"
+                    id="pfl-edit-btn"
+                    onclick="ProfileController.startEdit()"
                   >
-                    Save Changes
+                    Edit
                   </button>
+                  <div
+                    id="pfl-edit-actions"
+                    class="hidden"
+                    style="display: flex; gap: 10px"
+                  >
+                    <button
+                      class="btn btn-ghost"
+                      onclick="ProfileController.cancelEdit()"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      class="btn btn-primary"
+                      onclick="ProfileController.save()"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1187,6 +1184,17 @@
 
     <div id="toast"></div>
 
+    <!-- ── PUBLIC PROFILE MODAL ── -->
+    <div class="overlay" id="public-profile-modal">
+      <div class="modal" style="max-width: 580px">
+        <div class="modal-hdr">
+          <h3 style="flex:1">User Profile</h3>
+          <button class="modal-close" onclick="PublicProfileController.close()">✕</button>
+        </div>
+        <div class="modal-body" id="pub-pfl-body" style="padding-top:4px"></div>
+      </div>
+    </div>
+
     <!-- ── LOGOUT CONFIRM MODAL ── -->
     <div class="overlay" id="logout-modal">
       <div class="modal" style="max-width: 400px">
@@ -1324,6 +1332,8 @@
     <script src="js/controllers/PostListController.js"></script>
     <script src="js/controllers/TxnController.js"></script>
     <script src="js/controllers/ProfileController.js"></script>
+    <script src="js/controllers/ReviewController.js"></script>
+    <script src="js/controllers/PublicProfileController.js"></script>
     <script src="js/controllers/AdminController.js"></script>
     <script src="js/controllers/ModalController.js"></script>
     <script src="js/controllers/ReportController.js"></script>

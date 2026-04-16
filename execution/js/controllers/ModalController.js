@@ -11,10 +11,17 @@ class ModalController {
     const own = p.sid === AuthController.user.id;
 
     document.getElementById("pm-title").textContent = p.title;
+
+    // Check for stored product photo
+    const prodImg = MarketController.getImage(p.id);
+
     document.getElementById("pm-body").innerHTML = `
       <div style="display:flex;gap:20px;flex-wrap:wrap">
-        <div style="width:110px;height:110px;background:var(--bg);border-radius:var(--r-lg);
-                    display:flex;align-items:center;justify-content:center;font-size:52px;flex-shrink:0">${p.em}</div>
+        <div id="pm-prod-img" style="width:110px;height:110px;background:var(--bg);border-radius:var(--r-lg);
+                    display:flex;align-items:center;justify-content:center;font-size:52px;flex-shrink:0;
+                    overflow:hidden;${prodImg ? `background-image:url('${prodImg}');background-size:cover;background-position:center;` : ""}">
+          ${prodImg ? "" : p.em}
+        </div>
         <div style="flex:1">
           <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px">
             <span class="badge ${p.type === "Sell" ? "badge-blue" : "badge-amber"}">${p.type}</span>
@@ -32,16 +39,28 @@ class ModalController {
       <div style="margin-top:18px;padding:13px;background:var(--bg);border-radius:var(--r)">
         <div style="font-weight:600;font-size:13px;margin-bottom:8px">Seller</div>
         <div style="display:flex;align-items:center;gap:10px">
-          ${Avatar.html(seller ? seller.id : 0, seller ? seller.fname[0] : "?", "",
-            "width:36px;height:36px;border-radius:50%;background:var(--brand);color:#fff;" +
-            "display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;")}
-          <div>
-            <div style="font-weight:500;font-size:14px">${seller ? seller.fname + " " + seller.lname : "Unknown"}</div>
+          <div onclick="${own ? "" : `PublicProfileController.open(${p.sid})`}"
+               style="${own ? "" : "cursor:pointer;"}"
+               title="${own ? "" : "View profile"}">
+            ${Avatar.html(seller ? seller.id : 0, seller ? seller.fname[0] : "?", "",
+              "width:36px;height:36px;border-radius:50%;background:var(--brand);color:#fff;" +
+              "display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;")}
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:500;font-size:14px;${own ? "" : "cursor:pointer;"}"
+                 onclick="${own ? "" : `PublicProfileController.open(${p.sid})`}">
+              ${seller ? seller.fname + " " + seller.lname : "Unknown"}
+            </div>
             <div style="font-size:12px;color:var(--text3)">${seller ? seller.dept + " · " + seller.sem : ""}</div>
           </div>
-          <div style="margin-left:auto"><span class="stars" style="font-size:14px">★★★★★</span>
-            <span style="font-size:13px">4.8</span></div>
+          <div id="pm-seller-stat" data-uid="${p.sid}" style="font-size:13px;text-align:right">
+            ${ReviewController.statLine(p.sid)}
+          </div>
         </div>
+        ${!own ? `<button class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%;justify-content:center;"
+          onclick="PublicProfileController.open(${p.sid})">
+          <i class="ph-bold ph-user" style="font-size:14px"></i> View Profile &amp; Reviews
+        </button>` : ""}
       </div>`;
 
     document.getElementById("pm-ftr").innerHTML = own

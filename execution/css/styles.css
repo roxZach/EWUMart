@@ -197,6 +197,13 @@ label {
   margin-bottom: 14px;
   display: none;
 }
+.field-err {
+  color: var(--danger);
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 6px;
+  min-height: 16px;
+}
 .card {
   background: var(--surface);
   border-radius: var(--r-lg);
@@ -834,6 +841,48 @@ label {
   flex-shrink: 0;
 }
 
+/* ── Review items (dashboard + profile) ── */
+.rv-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.rv-item:last-child {
+  border-bottom: none;
+}
+.rv-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.rv-av {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.rv-av:hover {
+  opacity: 0.82;
+}
+.rv-text {
+  font-size: 13px;
+  color: var(--text2);
+  font-style: italic;
+  line-height: 1.5;
+  padding-left: 44px;
+}
+
+
 /* ══════════════════════════════════════════
    MARKETPLACE
 ══════════════════════════════════════════ */
@@ -896,6 +945,20 @@ label {
   top: 10px;
   right: 10px;
 }
+/* Sold product card — slightly muted */
+.pc-sold {
+  opacity: 0.78;
+}
+.pc-sold .pc-img {
+  filter: grayscale(25%);
+}
+/* Emoji inside product card image area */
+.pc-em {
+  font-size: 52px;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
 .pc-body {
   padding: 13px 14px;
 }
@@ -946,7 +1009,7 @@ label {
   border-radius: var(--r-lg);
   border: 1px solid var(--border);
   box-shadow: var(--sh);
-  height: calc(100vh - var(--nav-h) - var(--bar-h) - 90px);
+  height: calc(100vh - var(--nav-h) - var(--bar-h) - 60px);
   min-height: 480px;
   overflow: hidden;
 }
@@ -1244,10 +1307,13 @@ label {
   padding: 28px;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.17s;
+  transition: border-color 0.17s, background 0.17s;
+  position: relative;    /* needed for the remove-photo button overlay */
+  overflow: hidden;
 }
 .upload-area:hover {
   border-color: var(--brand-mid);
+  background: var(--brand-light);
 }
 
 /* ══════════════════════════════════════════
@@ -1317,21 +1383,30 @@ label {
   gap: 9px;
   margin-bottom: 5px;
 }
+/* rv-av: defer to the newer, fuller definition added in the Review System section */
 .rv-av {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: var(--bg2);
+  background: var(--brand);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--brand);
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: opacity 0.15s;
 }
+.rv-av:hover { opacity: 0.82; }
 .rv-text {
   font-size: 13px;
   color: var(--text2);
+  font-style: italic;
+  line-height: 1.5;
+  padding-left: 44px;
 }
 
 /* ══════════════════════════════════════════
@@ -1541,3 +1616,313 @@ label {
     grid-template-columns: 1fr;
   }
 }
+
+/* ══════════════════════════════════════════
+   REVIEW SYSTEM
+══════════════════════════════════════════ */
+
+/* ── Write / Rate section ── */
+.rv-write-box {
+  background: var(--brand-light);
+  border: 1px solid #c5d8f0;
+  border-radius: var(--r-lg);
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+.rv-write-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--brand);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.rv-star-picker {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.sp-star {
+  font-size: 26px;
+  color: var(--bg2);
+  cursor: pointer;
+  transition: color 0.12s, transform 0.1s;
+  line-height: 1;
+  user-select: none;
+}
+.sp-star.filled {
+  color: var(--accent);
+}
+.sp-star.hover,
+.sp-star:hover {
+  color: var(--accent);
+  transform: scale(1.18);
+}
+.sp-label {
+  font-size: 12px;
+  color: var(--text3);
+  margin-left: 6px;
+}
+.sp-remove {
+  font-size: 11px;
+  color: var(--danger);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 2px;
+  font-family: inherit;
+  vertical-align: middle;
+}
+.sp-remove:hover {
+  text-decoration: underline;
+}
+.rv-text-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.rv-textarea {
+  flex: 1;
+  min-height: 64px;
+  resize: vertical;
+  border-radius: var(--r);
+  font-size: 13px;
+}
+.rv-empty {
+  color: var(--text3);
+  font-size: 14px;
+  padding: 18px 0;
+  text-align: center;
+}
+
+/* ── Reviewer group ── */
+.rv-group {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.rv-group:last-child {
+  margin-bottom: 0;
+}
+.rv-group-hdr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.rv-group-av {
+  flex-shrink: 0;
+}
+.rv-group-av .rg-av {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.rv-group-info {
+  flex: 1;
+  min-width: 0;
+}
+.rv-group-name {
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rv-group-meta {
+  font-size: 11px;
+  color: var(--text3);
+}
+.rv-group-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.rv-stars-num {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+}
+
+/* ── Speech bubble review ── */
+.rv-bubble {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.rv-bubble:last-child {
+  border-bottom: none;
+}
+.rv-bubble-txt {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+  font-style: italic;
+}
+.rv-bubble-ftr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+.rv-date {
+  font-size: 11px;
+  color: var(--text3);
+}
+.rv-acts {
+  display: flex;
+  gap: 4px;
+}
+.rv-act-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.15s;
+  padding: 0;
+}
+.rv-act-btn:hover {
+  background: var(--bg2);
+  color: var(--text);
+}
+.rv-act-del:hover {
+  background: var(--danger-light);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+/* ── Inline edit ── */
+.rv-edit-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 4px 0;
+}
+.rv-edit-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+/* ── Stat line ── */
+.rv-no-rating {
+  font-size: 12px;
+  color: var(--text3);
+}
+.rv-stat-sep {
+  color: var(--text3);
+  margin: 0 2px;
+}
+.rv-stat-txt {
+  color: var(--text3);
+  font-size: 13px;
+}
+
+/* ── Conversation list avatar clickable wrapper ── */
+.cl-av-wrap {
+  flex-shrink: 0;
+  border-radius: 50%;
+  transition: opacity 0.15s;
+}
+.cl-av-wrap:hover {
+  opacity: 0.8;
+}
+
+/* ══════════════════════════════════════════
+   PUBLIC PROFILE MODAL
+══════════════════════════════════════════ */
+.pub-pfl-top {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.pub-pfl-av-wrap {
+  flex-shrink: 0;
+}
+.pub-pfl-av {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+}
+.pub-pfl-info {
+  flex: 1;
+  min-width: 0;
+}
+.pub-pfl-name {
+  font-family: "Syne", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.pub-pfl-id {
+  font-size: 12px;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+.pub-pfl-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.pub-pfl-meta span {
+  font-size: 12px;
+  background: var(--bg2);
+  padding: 2px 9px;
+  border-radius: 20px;
+  color: var(--text2);
+}
+.pub-pfl-rating {
+  font-size: 14px;
+}
+.pub-pfl-bio {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text2);
+  background: var(--bg);
+  border-left: 3px solid var(--brand-light);
+  padding: 10px 14px;
+  border-radius: 0 var(--r) var(--r) 0;
+  margin-bottom: 16px;
+}
+.pub-pfl-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.pub-pfl-rv-section {
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+}
+
