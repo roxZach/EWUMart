@@ -17,6 +17,9 @@ class PublicProfileController {
   static async open(uid) {
     if (!AuthController.user) return;
 
+    // Visitors must register to view profiles or leave reviews
+    if (AuthController.checkVisitor()) return;
+
     // Viewing own profile → go to profile page instead
     if (uid === AuthController.user.id) {
       Router.go("profile");
@@ -38,15 +41,26 @@ class PublicProfileController {
     overlay.classList.add("open");
 
     try {
-      // Fetch fresh user data; reviews are already being cached in db.data.reviews
-      // but we fetch to ensure we have the full picture even if they weren't
-      // in the current user's init data.
-      const [userData, freshRevs] = await Promise.all([
-        ApiService.getUser(uid),
-        ApiService.getReviewsFor(uid),
-      ]);
+      // Use cached user data first (already loaded at login via /api/init)
+      let userData = db.user(uid);
 
-      // Merge fresh reviews into cache
+      // If not in cache (e.g. edge case), fall back to users list
+      if (!userData) {
+        const allUsers = await ApiService.get("/users");
+        allUsers.forEach((u) => {
+          if (!db.data.users.find((x) => x.id === u.id)) {
+            db.data.users.push(u);
+          }
+        });
+        userData = db.user(uid);
+      }
+
+      if (!userData) {
+        throw new Error("User not found.");
+      }
+
+      // Fetch fresh reviews for this user
+      const freshRevs = await ApiService.getReviewsFor(uid);
       db.mergeReviews(freshRevs);
 
       PublicProfileController._render(userData);

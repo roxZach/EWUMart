@@ -77,7 +77,9 @@ class MsgController {
         const thread = db.thread(u.id, pid);
         const last = thread[thread.length - 1];
         const init = partner.fname[0] + (partner.lname ? partner.lname[0] : "");
-        const unread = thread.filter((m) => m.to === u.id).length;
+        // Unread: last msg was TO me and not yet seen
+        const seen = Badge._loadSeen(u.id);
+        const isUnread = last && last.to === u.id && seen[String(pid)] !== last.id;
         const active = MsgController._activePartnerId === pid;
 
         return `
@@ -86,12 +88,12 @@ class MsgController {
             ${Avatar.html(pid, init, "cl-av")}
           </div>
           <div class="cl-info">
-            <div class="cl-name">${partner.fname} ${partner.lname}</div>
-            <div class="cl-prev">${last ? (last.from === u.id ? "You: " : "") + last.text : "No messages yet"}</div>
+            <div class="cl-name${isUnread ? ' cl-name-bold' : ''}">${partner.fname} ${partner.lname}</div>
+            <div class="cl-prev${isUnread ? ' cl-prev-bold' : ''}">${last ? (last.from === u.id ? "You: " : "") + last.text : "No messages yet"}</div>
           </div>
           <div class="cl-meta">
             <div class="cl-time">${last ? last.time : ""}</div>
-            ${unread > 0 ? `<div class="cl-unread">${unread}</div>` : ""}
+            ${isUnread ? `<div class="cl-unread">●</div>` : ""}
           </div>
         </div>`;
       })
@@ -103,6 +105,9 @@ class MsgController {
     const u = AuthController.user;
     const partner = db.user(pid);
     if (!partner) return;
+
+    // Mark this thread as read — clears the unread badge
+    Badge.markRead(u.id, pid);
 
     MsgController._renderList();
 

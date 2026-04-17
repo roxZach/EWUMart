@@ -98,6 +98,7 @@ class ReviewController {
       await db.addReview({ by: AuthController.user.id, for: targetUid, stars, text: "" });
       Toast.show(`Rated ${stars} ★`);
       ReviewController._refresh(targetUid);
+      NotifController.updateDot();
     } catch (e) {
       Toast.show("Failed to save rating.");
     }
@@ -124,11 +125,21 @@ class ReviewController {
       Toast.show("Please write something first.");
       return;
     }
+    // Enforce max 3 text reviews per (viewer → target) pair
+    const viewerUid = AuthController.user.id;
+    const existing = db.data.reviews.filter(
+      (r) => r.by === viewerUid && r.for === targetUid && r.stars === 0 && r.text
+    );
+    if (existing.length >= 3) {
+      Toast.show("You can post a maximum of 3 reviews per person.");
+      return;
+    }
     try {
-      await db.addReview({ by: AuthController.user.id, for: targetUid, stars: 0, text });
+      await db.addReview({ by: viewerUid, for: targetUid, stars: 0, text });
       inp.value = "";
       Toast.show("Review posted! ✅");
       ReviewController._refresh(targetUid);
+      NotifController.updateDot();
       DashController.render();
     } catch (e) {
       Toast.show("Failed to post review.");
@@ -189,9 +200,15 @@ class ReviewController {
     const myStars = myRating ? myRating.stars : 0;
     const myRid = myRating ? myRating.id : null;
 
+    const myTextReviews = db.data.reviews.filter(
+      (r) => r.by === viewerUid && r.for === targetUid && r.stars === 0 && r.text
+    );
+    const remaining = 3 - myTextReviews.length;
+    const canReview = remaining > 0;
+
     return `
-      <div class="rv-write-box">
-        <div class="rv-write-title">Your Rating &amp; Review</div>
+      <div class="rv-write-box" style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border)">
+        <div class="rv-write-title">Your Rating</div>
         <div class="rv-star-picker" data-uid="${targetUid}">
           ${[1, 2, 3, 4, 5]
             .map(
@@ -207,12 +224,18 @@ class ReviewController {
             }
           </span>
         </div>
-        <div class="rv-text-row">
-          <textarea id="rv-inp-${targetUid}" class="rv-textarea" rows="2"
-            placeholder="Share your experience…"></textarea>
-          <button class="btn btn-primary btn-sm"
-            onclick="ReviewController.submitText(${targetUid})">Post</button>
-        </div>
+      </div>
+      <div class="rv-write-box">
+        <div class="rv-write-title">Leave a Review</div>
+        ${canReview
+          ? `<div class="rv-text-row">
+              <textarea id="rv-inp-${targetUid}" class="rv-textarea" rows="2"
+                placeholder="Share your experience… (${remaining} review${remaining === 1 ? "" : "s"} left)"></textarea>
+              <button class="btn btn-primary btn-sm"
+                onclick="ReviewController.submitText(${targetUid})">Post</button>
+            </div>`
+          : `<div style="font-size:12px;color:var(--text3);margin-top:2px">You've reached the 3-review limit for this person.</div>`
+        }
       </div>`;
   }
 

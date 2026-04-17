@@ -12,8 +12,15 @@ class MarketController {
    */
   static render(list) {
     const grid = document.getElementById("products-grid");
-    // Products arrive newest-first from the API (ORDER BY id DESC).
-    const items = list !== undefined ? list : db.data.products;
+    let items = list !== undefined ? list : db.data.products;
+
+    // Sort: Active/Want newest-first (by id desc), Sold sinks to the bottom
+    items = [...items].sort((a, b) => {
+      const aActive = a.status !== "Sold" ? 1 : 0;
+      const bActive = b.status !== "Sold" ? 1 : 0;
+      if (aActive !== bActive) return bActive - aActive;
+      return b.id - a.id; // within same group, newest first
+    });
 
     if (!items.length) {
       grid.innerHTML =
@@ -56,8 +63,9 @@ class MarketController {
 
   /** Build a product card HTML string */
   static _card(p) {
+    const u = AuthController.user;
     const seller = db.user(p.sid);
-    const own = p.sid === AuthController.user.id;
+    const own = u && p.sid === u.id;
     const isSold = p.status === "Sold";
     return `
       <div class="pc${isSold ? " pc-sold" : ""}" onclick="ModalController.openProduct(${p.id})">
@@ -79,7 +87,7 @@ class MarketController {
               ? `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();PostController.edit(${p.id})"><i class="ph-bold ph-pencil-simple"></i> Edit</button>`
               : isSold
               ? `<button class="btn btn-ghost btn-sm" disabled style="opacity:.5;cursor:default">Sold</button>`
-              : `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();MsgController.startWith(${p.sid})"><i class="ph-bold ph-chat-circle-dots"></i> Chat</button>`
+              : `<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();if(AuthController.checkVisitor())return;MsgController.startWith(${p.sid})"><i class="ph-bold ph-chat-circle-dots"></i> Chat</button>`
           }
         </div>
       </div>`;

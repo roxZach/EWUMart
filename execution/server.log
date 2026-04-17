@@ -1,0 +1,93 @@
+[OK] Database ready: /Users/ibnajiam/Documents/Study/Own Projects/EWUMart/execution/ewumart.db
+
+[EWUMart] Backend running at http://localhost:5500
+
+ * Serving Flask app 'server'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5500
+ * Running on http://192.168.0.102:5500
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+127.0.0.1 - - [17/Apr/2026 10:42:23] "[35m[1mPOST /api/reviews HTTP/1.1[0m" 201 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /css/styles.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/ApiService.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/Database.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/Toast.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/Badge.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/Router.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/Avatar.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/DeleteModal.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/AuthController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/DashController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/MarketController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/MsgController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/PostController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/PostListController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/TxnController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/ProfileController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "GET /js/controllers/ReviewController.js HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/PublicProfileController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/AdminController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/ModalController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/ReportController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/controllers/NotifController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:43:30] "GET /api/init/6 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:43:53] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:43:53] "GET /api/init/7 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:43:59] "GET /api/reviews/6 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:44:02] "[35m[1mPOST /api/reviews HTTP/1.1[0m" 201 -
+127.0.0.1 - - [17/Apr/2026 10:44:11] "[35m[1mPOST /api/reviews HTTP/1.1[0m" 201 -
+127.0.0.1 - - [17/Apr/2026 10:44:49] "[35m[1mPOST /api/transactions HTTP/1.1[0m" 201 -
+127.0.0.1 - - [17/Apr/2026 10:45:06] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:45:06] "GET /api/init/6 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:47:29] "PUT /api/products/10 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:47:36] "PUT /api/products/10 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /css/styles.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/ApiService.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/Database.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/Toast.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/Badge.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/Router.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/Avatar.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/DeleteModal.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/AuthController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/DashController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/MarketController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/MsgController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/PostController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/PostListController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/TxnController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/ProfileController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/ReviewController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/PublicProfileController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/AdminController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/ModalController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/ReportController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/controllers/NotifController.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [17/Apr/2026 10:47:45] "GET /api/init/6 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:47:57] "PUT /api/products/10 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:53:07] "PUT /api/products/10 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:53:35] "PUT /api/products/10 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:54:05] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:54:05] "GET /api/init/7 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 10:59:16] "[35m[1mPOST /api/products HTTP/1.1[0m" 201 -
+127.0.0.1 - - [17/Apr/2026 10:59:39] "GET /api/reviews/6 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 11:00:57] "GET /api/reviews/6 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 11:01:40] "[35m[1mPOST /api/products HTTP/1.1[0m" 201 -
+127.0.0.1 - - [17/Apr/2026 11:02:05] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 11:02:05] "GET /api/init/6 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 11:02:14] "GET /api/reviews/7 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 11:02:21] "GET /api/reviews/7 HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 11:02:22] "[35m[1mPOST /api/reviews HTTP/1.1[0m" 201 -
+127.0.0.1 - - [17/Apr/2026 11:02:32] "[35m[1mPOST /api/reviews HTTP/1.1[0m" 201 -
+127.0.0.1 - - [17/Apr/2026 11:02:38] "[35m[1mPOST /api/transactions HTTP/1.1[0m" 201 -
+127.0.0.1 - - [17/Apr/2026 11:02:56] "[35m[1mPOST /api/messages HTTP/1.1[0m" 201 -
+127.0.0.1 - - [17/Apr/2026 11:03:10] "GET /api/products HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 11:03:21] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [17/Apr/2026 11:03:21] "GET /api/init/6 HTTP/1.1" 200 -

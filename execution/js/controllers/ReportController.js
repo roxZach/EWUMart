@@ -7,6 +7,7 @@ class ReportController {
   static _productId = null;
 
   static open(pid) {
+    if (AuthController.checkVisitor()) return;
     ReportController._productId = pid;
     document.getElementById("rep-modal").classList.add("open");
   }

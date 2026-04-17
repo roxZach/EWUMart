@@ -1549,6 +1549,22 @@ label {
   color: var(--text2);
   margin-top: 2px;
 }
+.dd-item .ni-date {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+/* Unread notification highlight */
+.dd-item-new {
+  background: color-mix(in srgb, var(--brand) 6%, var(--surface));
+  border-left: 3px solid var(--brand-mid);
+}
+.dd-item-new:hover {
+  background: color-mix(in srgb, var(--brand) 10%, var(--surface));
+}
+/* Unread message conversation bold */
+.cl-name-bold { font-weight: 700; color: var(--text); }
+.cl-prev-bold { font-weight: 500; color: var(--text2); }
 
 /* TOAST */
 #toast {

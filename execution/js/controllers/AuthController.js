@@ -193,6 +193,7 @@ class AuthController {
     }
 
     Badge.update();
+    NotifController.updateDot();
     Router.go("dashboard");
     Toast.show(`Welcome, ${u.fname}! 👋`);
   }
