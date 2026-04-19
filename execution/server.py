@@ -11,9 +11,14 @@ DB:   execution/ewumart.db  (auto-created on first run)
 """
 
 import os, json, hashlib, sqlite3, sys
+import urllib.request, urllib.parse
 from datetime import date, datetime
 from flask import Flask, jsonify, request, send_from_directory, g
 from flask_cors import CORS
+
+# Google OAuth
+GOOGLE_CLIENT_ID = "863974990132-625q9ea2m387u3c2ktolm22084rmde6t.apps.googleusercontent.com"
+EWU_EMAIL_DOMAIN = "@std.ewubd.edu"
 
 # Force UTF-8 output so emoji in seed data / logs never crash on Windows
 if hasattr(sys.stdout, 'reconfigure'):
@@ -208,6 +213,15 @@ def init_db():
     print(f"[OK] Database ready: {DB_PATH}")
 
 # ══════════════════════════════════════════════════════════════════════════════
+# STATIC PAGE ROUTES
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app.route('/admin')
+def admin_page():
+    """Serve the admin / staff email-password login page."""
+    return send_from_directory(BASE_DIR, 'admin.html')
+
+# ══════════════════════════════════════════════════════════════════════════════
 # API ROUTES
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -256,6 +270,123 @@ def api_register():
     uid = mut("INSERT INTO users (fname,lname,email,pw,dept,sem,sid,role,bio) VALUES (?,?,?,?,?,?,?,'user','')",
               (fn, ln, em, hp(pw), dept, sem, sid))
     return jsonify(q1("SELECT * FROM users WHERE id=?", (uid,))), 201
+
+@app.route('/api/auth/google', methods=['POST'])
+def api_auth_google():
+    """
+    Unified Google authentication endpoint.
+    - Verifies the Google ID token.
+    - Enforces @std.ewubd.edu email domain.
+    - If user exists  → returns full user object (login).
+    - If user is new  → returns {new_user: True, email, given_name, family_name}
+                        so the frontend can show the profile-completion modal.
+    """
+    d        = request.get_json() or {}
+    id_token = (d.get('id_token') or '').strip()
+
+    if not id_token:
+        return jsonify({'error': 'Missing Google ID token.'}), 400
+
+    # ── Verify with Google ────────────────────────────────────────────────────
+    try:
+        url = ("https://oauth2.googleapis.com/tokeninfo?id_token="
+               + urllib.parse.quote(id_token, safe=''))
+        req = urllib.request.Request(url, headers={'User-Agent': 'EWUMart/1.0'})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            info = json.loads(resp.read().decode())
+    except Exception:
+        return jsonify({'error': 'Could not verify Google token. Please try again.'}), 400
+
+    if info.get('aud') != GOOGLE_CLIENT_ID:
+        return jsonify({'error': 'Token audience mismatch.'}), 401
+
+    if info.get('email_verified') not in (True, 'true'):
+        return jsonify({'error': 'Google email is not verified.'}), 401
+
+    email = (info.get('email') or '').lower().strip()
+    if not email.endswith(EWU_EMAIL_DOMAIN):
+        return jsonify({
+            'error': f'Only {EWU_EMAIL_DOMAIN} accounts are allowed. '
+                     f'You signed in with: {email}'
+        }), 403
+
+    # ── Lookup user ─────────────────────────────────────────────────────────
+    existing = q1("SELECT * FROM users WHERE email=?", (email,))
+    if existing:
+        return jsonify(existing)   # Existing user → login
+
+    # New user → tell frontend to show profile-completion modal
+    return jsonify({
+        'new_user':    True,
+        'email':       email,
+        'given_name':  info.get('given_name', ''),
+        'family_name': info.get('family_name', ''),
+        'sub':         info.get('sub', ''),
+    })
+
+
+@app.route('/api/register/google', methods=['POST'])
+def api_register_google():
+    """Google OAuth registration — verifies ID token then upserts the user."""
+    d        = request.get_json() or {}
+    id_token = (d.get('id_token') or '').strip()
+    fname    = (d.get('fname') or '').strip()
+    lname    = (d.get('lname') or '').strip()
+    dept     = (d.get('dept') or '').strip()
+    sem      = (d.get('sem')  or '').strip()
+    sid      = (d.get('sid')  or '').strip()
+
+    if not id_token:
+        return jsonify({'error': 'Missing Google ID token.'}), 400
+    if not fname or not dept or not sem:
+        return jsonify({'error': 'Please fill in First Name, Department, and Semester.'}), 400
+
+    # ── Step 1: Verify token with Google ──────────────────────────────────────
+    try:
+        url = ("https://oauth2.googleapis.com/tokeninfo?id_token="
+               + urllib.parse.quote(id_token, safe=''))
+        req = urllib.request.Request(url, headers={'User-Agent': 'EWUMart/1.0'})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            info = json.loads(resp.read().decode())
+    except Exception as ex:
+        return jsonify({'error': 'Could not verify Google token. Please try again.'}), 400
+
+    # ── Step 2: Validate audience ─────────────────────────────────────────────
+    if info.get('aud') != GOOGLE_CLIENT_ID:
+        return jsonify({'error': 'Token audience mismatch.'}), 401
+
+    # ── Step 3: Check email verified ──────────────────────────────────────────
+    if info.get('email_verified') not in (True, 'true'):
+        return jsonify({'error': 'Google email is not verified.'}), 401
+
+    # ── Step 4: Enforce EWU student email domain ──────────────────────────────
+    email = (info.get('email') or '').lower().strip()
+    if not email.endswith(EWU_EMAIL_DOMAIN):
+        return jsonify({
+            'error': f'Only {EWU_EMAIL_DOMAIN} accounts are allowed. '
+                     f'You signed in with: {email}'
+        }), 403
+
+    # ── Step 5: Auto-derive student ID if not supplied ────────────────────────
+    if not sid:
+        sid = email.split('@')[0]   # e.g. "2023-3-60-202"
+
+    # ── Step 6: Upsert user ───────────────────────────────────────────────────
+    existing = q1("SELECT * FROM users WHERE email=?", (email,))
+    if existing:
+        # User already registered — update name/dept/sem in case they changed
+        mut("UPDATE users SET fname=?,lname=?,dept=?,sem=?,sid=? WHERE id=?",
+            (fname, lname, dept, sem, sid, existing['id']))
+        return jsonify(q1("SELECT * FROM users WHERE id=?", (existing['id'],)))
+
+    uid = mut(
+        "INSERT INTO users (fname,lname,email,pw,dept,sem,sid,role,bio) "
+        "VALUES (?,?,?,?,?,?,?,'user','')",
+        (fname, lname, email, hp('google-oauth-' + info.get('sub', '')), dept, sem, sid)
+    )
+    return jsonify(q1("SELECT * FROM users WHERE id=?", (uid,))), 201
+
+
 
 # ── Users ─────────────────────────────────────────────────────────────────────
 @app.route('/api/users')

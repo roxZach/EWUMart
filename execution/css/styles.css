@@ -316,6 +316,49 @@ label {
   font-size: 14px;
   margin-bottom: 26px;
 }
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1.5px solid var(--border);
+}
+.auth-brand-icon {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+.auth-brand span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.01em;
+}
+.auth-note {
+  font-size: 12px;
+  color: var(--text3);
+  text-align: center;
+  margin-top: 18px;
+  line-height: 1.6;
+}
+.auth-note-link {
+  color: var(--brand-mid);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.auth-note-link:hover {
+  color: var(--brand);
+}
 .auth-tabs {
   display: flex;
   border: 1.5px solid var(--border);
@@ -360,6 +403,190 @@ label {
   background: var(--surface);
   padding: 0 12px;
   position: relative;
+}
+
+/* ── Google Registration Styles ── */
+.google-reg-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.google-reg-icon {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.google-reg-title {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+}
+.google-reg-sub {
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 2px;
+}
+.google-edu-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--brand-light);
+  color: var(--brand-mid);
+  border-radius: var(--r);
+  padding: 9px 14px;
+  font-size: 13px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(37, 99, 168, 0.18);
+}
+/* Make the GSI button fill the container width */
+#google-signin-btn > div {
+  width: 100% !important;
+}
+#google-signin-btn iframe {
+  width: 100% !important;
+}
+
+/* ── Google Profile Completion Modal ── */
+.gc-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 22px;
+}
+.gc-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.gc-step-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg2);
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  border: 2px solid var(--border);
+}
+.gc-step.done .gc-step-dot {
+  background: var(--success);
+  color: #fff;
+  border-color: var(--success);
+}
+.gc-step.active .gc-step-dot {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+}
+.gc-step-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  white-space: nowrap;
+}
+.gc-step.done .gc-step-label,
+.gc-step.active .gc-step-label {
+  color: var(--text2);
+}
+.gc-step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  margin: 0 6px;
+  margin-bottom: 16px;
+}
+.gc-step-line.done {
+  background: var(--success);
+}
+.gc-email-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 13px;
+  font-size: 14px;
+  color: var(--text2);
+  word-break: break-all;
+}
+
+/* ── OVERLAY / MODAL ── */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: 900;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.overlay.open {
+  display: flex;
+}
+.modal {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+  animation: modalPop 0.2s ease;
+}
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+.modal-hdr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px 0;
+}
+.modal-hdr h3 {
+  font-family: "Syne", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--text3);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.modal-close:hover { background: var(--bg2); color: var(--text); }
+.modal-body {
+  padding: 20px 24px 24px;
+}
+.modal-ftr {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 0 24px 20px;
+  flex-wrap: wrap;
 }
 
 /* ── APP SHELL ── */
