@@ -31,3 +31,25 @@ const DeleteModal = {
     document.getElementById("delete-post-modal").classList.remove("open");
   },
 };
+
+const DeleteUserModal = {
+  _id: null,
+  _callback: null,
+
+  open(id, callback) {
+    DeleteUserModal._id = id;
+    DeleteUserModal._callback = callback;
+    document.getElementById("delete-user-modal").classList.add("open");
+  },
+
+  async confirm() {
+    DeleteUserModal.close();
+    if (DeleteUserModal._callback) {
+      await DeleteUserModal._callback(DeleteUserModal._id);
+    }
+  },
+
+  close() {
+    document.getElementById("delete-user-modal").classList.remove("open");
+  },
+};

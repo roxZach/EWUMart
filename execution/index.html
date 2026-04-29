@@ -18,6 +18,8 @@
       href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css"
     />
     <link rel="stylesheet" href="css/styles.css" />
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>
     <!-- ══════════ AUTH ══════════ -->
@@ -25,18 +27,20 @@
       <div class="auth-left">
         <div class="auth-logo">EWU<span>Mart</span></div>
         <div class="auth-tag">East West University's Student Marketplace</div>
-        <!--<ul class="auth-features">
-      <li><span class="fi">📚</span> Buy &amp; sell course books and materials</li>
-      <li><span class="fi"><i class="ph-bold ph-magnifying-glass"></i></span> Filter by course code or category</li>
-      <li><span class="fi"><i class="ph-bold ph-chat-circle-dots"></i></span> In-app messaging with fellow students</li>
-      <li><span class="fi">⭐</span> Trust ratings &amp; peer reviews</li>
-      <li><span class="fi">🛡️</span> Admin-moderated for campus safety</li>
-    </ul> -->
+        <!-- <ul class="auth-features">
+          <li><span class="fi">📚</span> Buy &amp; sell course books and materials</li>
+          <li><span class="fi"><i class="ph-bold ph-magnifying-glass"></i></span> Filter by course code or category</li>
+          <li><span class="fi"><i class="ph-bold ph-chat-circle-dots"></i></span> In-app messaging with fellow students</li>
+          <li><span class="fi">⭐</span> Trust ratings &amp; peer reviews</li>
+          <li><span class="fi">🛡️</span> Admin-moderated for campus safety</li>
+        </ul> -->
       </div>
       <div class="auth-right">
         <div class="auth-box">
           <h2 id="auth-h">Welcome back</h2>
           <p class="sub">Sign in to your EWUMart account</p>
+
+          <!-- Tabs -->
           <div class="auth-tabs">
             <button
               class="auth-tab active"
@@ -48,31 +52,19 @@
               class="auth-tab"
               onclick="AuthController.switchTab('register', this)"
             >
-              Register
+              Sign Up
             </button>
           </div>
+
           <div id="auth-err" class="error-msg"></div>
-          <!-- login -->
+
+          <!-- ── LOGIN TAB ── -->
           <div id="login-form">
-            <div class="fg">
-              <label>EWU Email</label
-              ><input id="l-email" type="email" placeholder="you@ewubd.edu" />
+            <div id="google-signin-btn-login" style="margin-bottom: 16px"></div>
+            <div class="google-edu-badge" style="margin-bottom: 18px">
+              <i class="ph-bold ph-student" style="font-size: 14px"></i>
+              Sign in with your <strong>@std.ewubd.edu</strong> Google account
             </div>
-            <div class="fg">
-              <label>Password</label
-              ><input
-                id="l-pass"
-                type="password"
-                placeholder="Enter password"
-              />
-            </div>
-            <button
-              class="btn btn-primary btn-lg"
-              style="width: 100%"
-              onclick="AuthController.login()"
-            >
-              Sign In →
-            </button>
             <div class="auth-div"><span>or browse as guest</span></div>
             <button
               class="btn btn-ghost"
@@ -81,77 +73,52 @@
             >
               <i class="ph-bold ph-eye"></i> Continue as Visitor
             </button>
+            <p class="auth-note">
+              Don't have an account?
+              <span
+                class="auth-note-link"
+                onclick="
+                  AuthController.switchTab(
+                    'register',
+                    document.querySelectorAll('.auth-tab')[1],
+                  )
+                "
+                >Sign up here</span
+              >
+            </p>
           </div>
-          <!-- register -->
+
+          <!-- ── SIGN UP TAB ── -->
           <div id="register-form" class="hidden">
-            <div class="form-row">
-              <div class="fg">
-                <label>First Name</label
-                ><input id="r-fn" placeholder="Your First Name" />
-              </div>
-              <div class="fg">
-                <label>Last Name</label
-                ><input id="r-ln" placeholder="Your Last Name" />
-              </div>
+            <div class="google-edu-badge" style="margin-bottom: 18px">
+              <i class="ph-bold ph-student" style="font-size: 14px"></i>
+              Only <strong>@std.ewubd.edu</strong> accounts can register
             </div>
-            <div class="fg">
-              <label>EWU Email</label
-              ><input id="r-em" type="email" placeholder="your@std.ewubd.edu" />
-            </div>
-            <div class="fg">
-              <label>Student ID</label
-              ><input id="r-sid" placeholder="2021-1-60-XXX" />
-            </div>
-            <div class="form-row">
-              <div class="fg">
-                <label>Department</label>
-                <select id="r-dept">
-                  <option value="">Select</option>
-                  <option>CSE</option>
-                  <option>EEE</option>
-                  <option>BBA</option>
-                  <option>ENG</option>
-                  <option>LAW</option>
-                  <option>PHM</option>
-                  <option>ECO</option>
-                  <option>GEB</option>
-                  <option>PPHS</option>
-                </select>
-              </div>
-              <div class="fg">
-                <label>Semester</label>
-                <select id="r-sem">
-                  <option value="">Select</option>
-                  <option>1st</option>
-                  <option>2nd</option>
-                  <option>3rd</option>
-                  <option>4th</option>
-                  <option>5th</option>
-                  <option>6th</option>
-                  <option>7th</option>
-                  <option>8th</option>
-                  <option>9th</option>
-                  <option>10th</option>
-                  <option>11th</option>
-                  <option>12th</option>
-                </select>
-              </div>
-            </div>
-            <div class="fg">
-              <label>Password</label
-              ><input
-                id="r-pw"
-                type="password"
-                placeholder="Min 6 characters"
-              />
-            </div>
+            <div
+              id="google-signin-btn-register"
+              style="margin-bottom: 16px"
+            ></div>
+            <div class="auth-div"><span>or browse as guest</span></div>
             <button
-              class="btn btn-primary btn-lg"
+              class="btn btn-ghost"
               style="width: 100%"
-              onclick="AuthController.register()"
+              onclick="AuthController.visitor()"
             >
-              Create Account →
+              <i class="ph-bold ph-eye"></i> Continue as Visitor
             </button>
+            <p class="auth-note">
+              Already have an account?
+              <span
+                class="auth-note-link"
+                onclick="
+                  AuthController.switchTab(
+                    'login',
+                    document.querySelectorAll('.auth-tab')[0],
+                  )
+                "
+                >Login here</span
+              >
+            </p>
           </div>
         </div>
       </div>
@@ -762,7 +729,11 @@
                     "
                     id="pfl-id"
                   ></div>
-                  <div style="margin-top: 10px" class="hide-admin" id="pfl-rating-display"></div>
+                  <div
+                    style="margin-top: 10px"
+                    class="hide-admin"
+                    id="pfl-rating-display"
+                  ></div>
                   <div
                     style="
                       margin-top: 14px;
@@ -1188,10 +1159,74 @@
     <div class="overlay" id="public-profile-modal">
       <div class="modal" style="max-width: 580px">
         <div class="modal-hdr">
-          <h3 style="flex:1">User Profile</h3>
-          <button class="modal-close" onclick="PublicProfileController.close()">✕</button>
+          <h3 style="flex: 1">User Profile</h3>
+          <button class="modal-close" onclick="PublicProfileController.close()">
+            ✕
+          </button>
         </div>
-        <div class="modal-body" id="pub-pfl-body" style="padding-top:4px"></div>
+        <div
+          class="modal-body"
+          id="pub-pfl-body"
+          style="padding-top: 4px"
+        ></div>
+      </div>
+    </div>
+
+    <!-- ── VISITOR PROMPT MODAL ── -->
+    <div class="overlay" id="vis-modal">
+      <div class="modal" style="max-width: 400px">
+        <div
+          class="modal-body"
+          style="text-align: center; padding: 36px 32px 28px"
+        >
+          <div
+            style="
+              width: 64px;
+              height: 64px;
+              border-radius: 50%;
+              background: var(--brand-light);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto 20px;
+              font-size: 28px;
+            "
+          >
+            <i class="ph-bold ph-user-circle" style="color: var(--brand)"></i>
+          </div>
+          <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 10px">
+            Create a Free Account
+          </h3>
+          <p
+            style="
+              color: var(--text2);
+              font-size: 14px;
+              line-height: 1.6;
+              margin-bottom: 28px;
+            "
+          >
+            Sign up with your EWU student Google account to buy, sell, and
+            message other students.
+          </p>
+          <div style="display: flex; gap: 12px">
+            <button
+              class="btn btn-ghost"
+              style="flex: 1; justify-content: center"
+              onclick="
+                document.getElementById('vis-modal').classList.remove('open')
+              "
+            >
+              Keep Browsing
+            </button>
+            <button
+              class="btn btn-primary"
+              style="flex: 1; justify-content: center"
+              onclick="AuthController.exitVisitorToLogin()"
+            >
+              <i class="ph-bold ph-google-logo"></i> Sign Up
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1304,6 +1339,189 @@
             >
               <i class="ph-bold ph-trash" style="font-size: 16px"></i> Yes,
               Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DELETE USER CONFIRM MODAL ── -->
+    <div class="overlay" id="delete-user-modal">
+      <div class="modal" style="max-width: 400px">
+        <div
+          class="modal-body"
+          style="text-align: center; padding: 36px 32px 28px"
+        >
+          <div
+            style="
+              width: 64px;
+              height: 64px;
+              border-radius: 50%;
+              background: var(--danger-light);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto 20px;
+              font-size: 28px;
+            "
+          >
+            <i class="ph-bold ph-user-minus" style="color: var(--danger)"></i>
+          </div>
+          <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 10px">
+            Delete this user?
+          </h3>
+          <p
+            style="
+              color: var(--text2);
+              font-size: 14px;
+              line-height: 1.6;
+              margin-bottom: 28px;
+            "
+          >
+            This action is permanent. The user and their listings will be
+            removed.
+          </p>
+          <div style="display: flex; gap: 12px">
+            <button
+              class="btn btn-ghost"
+              style="flex: 1; justify-content: center"
+              onclick="DeleteUserModal.close()"
+            >
+              Cancel
+            </button>
+            <button
+              class="btn btn-danger"
+              style="flex: 1; justify-content: center"
+              onclick="DeleteUserModal.confirm()"
+            >
+              <i class="ph-bold ph-trash" style="font-size: 16px"></i> Yes,
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── GOOGLE PROFILE COMPLETION MODAL ── -->
+    <div class="overlay" id="google-complete-modal">
+      <div class="modal" style="max-width: 480px">
+        <div class="modal-body" style="padding: 32px 32px 28px">
+          <!-- Step indicator -->
+          <div class="gc-steps">
+            <div class="gc-step done">
+              <div class="gc-step-dot">
+                <i class="ph-bold ph-check" style="font-size: 11px"></i>
+              </div>
+              <div class="gc-step-label">Google Verified</div>
+            </div>
+            <div class="gc-step-line done"></div>
+            <div class="gc-step active">
+              <div class="gc-step-dot">2</div>
+              <div class="gc-step-label">Complete Profile</div>
+            </div>
+          </div>
+          <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 4px">
+            Almost there!
+          </h3>
+          <p style="color: var(--text2); font-size: 13px; margin-bottom: 20px">
+            Fill in your EWU student details to finish creating your account.
+          </p>
+          <div id="gc-err" class="error-msg"></div>
+          <!-- Email (read-only) -->
+          <div class="fg">
+            <label>Google Email (verified)</label>
+            <div class="gc-email-display" id="gc-email-display">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 48 48"
+                style="flex-shrink: 0"
+              >
+                <path
+                  fill="#EA4335"
+                  d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+                />
+                <path
+                  fill="#4285F4"
+                  d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+                />
+              </svg>
+              <span id="gc-email"></span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="fg">
+              <label>First Name *</label>
+              <input id="gc-fn" placeholder="First name" />
+            </div>
+            <div class="fg">
+              <label>Last Name</label>
+              <input id="gc-ln" placeholder="Last name" />
+            </div>
+          </div>
+          <div class="fg">
+            <label>Student ID</label>
+            <input id="gc-sid" placeholder="2023-3-60-202" />
+          </div>
+          <div class="form-row">
+            <div class="fg">
+              <label>Department *</label>
+              <select id="gc-dept">
+                <option value="">Select</option>
+                <option>CSE</option>
+                <option>EEE</option>
+                <option>BBA</option>
+                <option>ENG</option>
+                <option>LAW</option>
+                <option>PHM</option>
+                <option>ECO</option>
+                <option>GEB</option>
+                <option>PPHS</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Semester *</label>
+              <select id="gc-sem">
+                <option value="">Select</option>
+                <option>1st</option>
+                <option>2nd</option>
+                <option>3rd</option>
+                <option>4th</option>
+                <option>5th</option>
+                <option>6th</option>
+                <option>7th</option>
+                <option>8th</option>
+                <option>9th</option>
+                <option>10th</option>
+                <option>11th</option>
+                <option>12th</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 6px">
+            <button
+              class="btn btn-ghost"
+              style="flex: 1; justify-content: center"
+              onclick="AuthController.closeGoogleModal()"
+            >
+              Cancel
+            </button>
+            <button
+              class="btn btn-primary"
+              style="flex: 2; justify-content: center"
+              id="gc-submit-btn"
+              onclick="AuthController.completeGoogleRegister()"
+            >
+              <i class="ph-bold ph-user-plus" style="font-size: 16px"></i>
+              Create Account
             </button>
           </div>
         </div>
