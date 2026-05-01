@@ -122,6 +122,18 @@ class AdminController {
     }
   }
 
+  static removeUser(id) {
+    DeleteUserModal.open(id, async (uid) => {
+      try {
+        await db.removeUser(uid);
+        AdminController.render();
+        Toast.show("User removed.");
+      } catch (e) {
+        Toast.show("Failed to remove user.");
+      }
+    });
+  }
+
   // ── Private ─────────────────────────────────────────────────────────────
 
   static _renderContent() {
@@ -167,9 +179,14 @@ class AdminController {
       <td>${db.data.products.filter((p) => p.sid === u.id).length}</td>
       <td>${
         u.id !== currentUserId
-          ? `<button class="btn btn-ghost btn-sm" onclick="AdminController.toggleRole(${u.id})">
-             ${u.role === "admin" ? "Demote" : "Make Admin"}
-           </button>`
+          ? `<div style="display:flex;gap:6px">
+               <button class="btn btn-ghost btn-sm" onclick="AdminController.toggleRole(${u.id})">
+                 ${u.role === "admin" ? "Demote" : "Make Admin"}
+               </button>
+               <button class="btn btn-danger btn-sm" onclick="AdminController.removeUser(${u.id})">
+                 Remove
+               </button>
+             </div>`
           : '<span style="font-size:12px;color:var(--text3)">You</span>'
       }</td>
     </tr>`,

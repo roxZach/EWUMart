@@ -50,4 +50,9 @@ const Loader = {
 };
 
 // ── Auto-restore session on page load ─────────────────────────────────────
-AuthController.tryRestore();
+AuthController.tryRestore().then((restored) => {
+  // If no session was restored render the Google sign-in button
+  if (!restored) {
+    AuthController.initGSI();
+  }
+});

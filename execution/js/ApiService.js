@@ -89,6 +89,19 @@ class ApiService {
     return ApiService.post("/register", data);
   }
 
+  /** Google Register — verifies ID token server-side, upserts user, returns user object */
+  static registerGoogle(data) {
+    return ApiService.post("/register/google", data);
+  }
+
+  /**
+   * Unified Google Auth — verifies token, returns existing user OR
+   * {new_user: true, email, given_name, family_name} for new students.
+   */
+  static authGoogle(data) {
+    return ApiService.post("/auth/google", data);
+  }
+
   /** Load all app data for uid in one round-trip */
   static init(uid) {
     return ApiService.get(`/init/${uid}`);
@@ -132,6 +145,10 @@ class ApiService {
   /** Users */
   static updateUser(id, data) {
     return ApiService.put(`/users/${id}`, data);
+  }
+
+  static deleteUser(id) {
+    return ApiService.del(`/users/${id}`);
   }
 
   static updatePassword(id, currentPw, newPw) {

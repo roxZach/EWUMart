@@ -166,6 +166,17 @@ class Database {
     return saved;
   }
 
+  /** Admin: delete a user */
+  async removeUser(uid) {
+    await ApiService.deleteUser(uid);
+    this.data.users = this.data.users.filter((u) => u.id !== uid);
+    this.data.products = this.data.products.filter((p) => p.sid !== uid);
+    this.data.msgs = this.data.msgs.filter((m) => m.from !== uid && m.to !== uid);
+    this.data.reviews = this.data.reviews.filter((r) => r.by !== uid && r.for !== uid);
+    this.data.txns = this.data.txns.filter((t) => t.bid !== uid && t.seller !== uid);
+    this.data.reports = this.data.reports.filter((r) => r.by !== uid);
+  }
+
   // ── Review helpers (read from cache) ────────────────────────────────────────
 
   /** All reviews received by uid */
